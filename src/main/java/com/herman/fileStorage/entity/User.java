@@ -1,5 +1,6 @@
 package com.herman.fileStorage.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,11 +23,20 @@ public class User {
     private String username;
 
     @Column(nullable = false)
+    @JsonIgnore// Borde man skapa en dto?
     private String password;
 
     @OneToMany(mappedBy = "owner")
+    @JsonIgnore
     private List<Folder> folders;
 
     @OneToMany(mappedBy = "owner")
+    @JsonIgnore
     private List<FileEntity> files;
+
+    public User(UUID uuid, String username, String encodedPassword) {
+        this.id = uuid;
+        this.username = username;
+        this.password = encodedPassword;
+    }
 }

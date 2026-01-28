@@ -1,5 +1,6 @@
 package com.herman.fileStorage.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,7 +16,7 @@ import java.util.List;
 public class Folder {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
@@ -25,6 +26,7 @@ public class Folder {
     private User owner;
 
     @OneToMany(mappedBy = "folder")
+    @JsonIgnore
     private List<FileEntity> files;
 
     public Folder(User owner, String name) {
