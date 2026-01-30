@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Service class for managing FileEntity operations.
@@ -47,6 +48,17 @@ public class FileService {
      */
     public Optional<FileEntity> findById(Long id) {
         return fileRepository.findById(id);
+    }
+
+    /**
+     * Finds a file by its id for a specific user
+     *
+     * @param id the id of the file
+     * @param userId the id of the user who should own the file
+     * @return an Optional containing the File if found and owned by user, else empty
+     */
+    public Optional<FileEntity> findByIdAndUserId(Long id, UUID userId) {
+        return fileRepository.findByIdAndOwnerId(id, userId);
     }
 
     /**

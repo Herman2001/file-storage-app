@@ -6,6 +6,8 @@ import com.herman.fileStorage.entity.FileEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Repository interface for files
@@ -27,4 +29,5 @@ public interface FileRepository  extends JpaRepository<FileEntity, Long> {
      * @return list of files owned by the user
      */
     List<FileEntity> findAllByOwner(User owner);
+    Optional<FileEntity> findByIdAndOwnerId(Long id, UUID ownerId);
 }

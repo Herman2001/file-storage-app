@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 
@@ -64,12 +65,8 @@ public class FileController {
 
         User user = SecurityUtils.getAuthenticatedUser();
 
-        FileEntity file = fileService.findById(fileId)
-                .orElseThrow(() -> new RuntimeException("File not found"));
-
-        if (!file.getOwner().getId().equals(user.getId())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+        FileEntity file = fileService.findByIdAndUserId(fileId, user.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "File not found"));
 
         return ResponseEntity.ok()
                 .header(
@@ -88,12 +85,8 @@ public class FileController {
 
         User user = SecurityUtils.getAuthenticatedUser();
 
-        FileEntity file = fileService.findById(fileId)
-                .orElseThrow(() -> new RuntimeException("File not found"));
-
-        if (!file.getOwner().getId().equals(user.getId())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+        FileEntity file = fileService.findByIdAndUserId(fileId, user.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "File not found"));
 
         fileService.deleteFile(fileId);
         return ResponseEntity.noContent().build();
