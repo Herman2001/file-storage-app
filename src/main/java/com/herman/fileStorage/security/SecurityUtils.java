@@ -6,9 +6,18 @@ import org.springframework.security.core.context.SecurityContextHolder;
 public class SecurityUtils {
 
     public static User getAuthenticatedUser() {
-        return (User) SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getPrincipal();
+        var authentications = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentications == null || !authentications.isAuthenticated()) {
+            throw new RuntimeException("User is not authenticated");
+        }
+
+        Object principal = authentications.getPrincipal();
+
+        if (!(principal instanceof User user)) {
+            throw new RuntimeException("User is not authenticated");
+        }
+
+        return user;
     }
 }
