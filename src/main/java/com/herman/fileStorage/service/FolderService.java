@@ -2,11 +2,14 @@ package com.herman.fileStorage.service;
 
 import com.herman.fileStorage.entity.Folder;
 import com.herman.fileStorage.entity.User;
+import com.herman.fileStorage.exception.ForbiddenException;
+import com.herman.fileStorage.exception.ResourceNotFoundException;
 import com.herman.fileStorage.repository.FolderRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /*
  * Service class for managing Folder entities.
@@ -37,7 +40,7 @@ public class FolderService {
     }
 
     /**
-     * Retrives a folder by its id
+     * Retrieves a folder by its id
      *
      * @param id the id of the folder
      * @return an Optional containing the Folder if found, else empty
@@ -47,7 +50,27 @@ public class FolderService {
     }
 
     /**
-     * Retrives all folders owned by a specific user
+     * Retrieves a folder by its id for a specific user
+     *
+     * @param id the id of the folder
+     * @param userId the UUID of the user who should own the folder
+     * @return the folder id found and owner by the user
+     * @throws ResourceNotFoundException if the folder is not found
+     * @throws ForbiddenException if the folder does not belong to the user
+     */
+    public Folder getFolderByIdAndUser(Long id, UUID userId) {
+        Folder folder = folderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Folder not found"));
+
+        if (!folder.getOwner().getId().equals(userId)) {
+            throw new ForbiddenException("You do not have access to this folder.");
+        }
+
+        return folder;
+    }
+
+    /**
+     * Retrieves all folders owned by a specific user
      *
      * @param owner the user that owns folders
      * @return list of folders
@@ -57,7 +80,7 @@ public class FolderService {
     }
 
     /**
-     * Deltes a folder by its id
+     * Deletes a folder by its id
      *
      * @param id the id of the folder to delete
      */
