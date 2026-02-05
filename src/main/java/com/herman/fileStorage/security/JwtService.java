@@ -15,8 +15,8 @@ import java.util.function.Function;
 public class JwtService {
 
     /**
-     * Sexret key used to sign JWT tokens.
-     * min 256bitar key length
+     * Secret key used to sign JWT tokens.
+     * min 256 byte key length
      */
     private static final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
@@ -85,13 +85,13 @@ public class JwtService {
     }
 
     /**
-     * Helper method for extracting a specifik calim from a token
+     * Helper method for extracting a specific claim from a token
      *
      *
      * @param token the JWT token
      * @param claimsResolver function that extracts a claim
      * @param <T> claim type
-     * @return extraced claim
+     * @return extracted claim
      */
     private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
@@ -99,7 +99,7 @@ public class JwtService {
     }
 
     /**
-     * Parses and extracts ALL calims from a JWT token
+     * Parses and extracts ALL claims from a JWT token
      * @param token the JWT token
      * @return all claims in the token
      * @throws io.jsonwebtoken if token is invalid
