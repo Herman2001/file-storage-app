@@ -1,4 +1,5 @@
 # File Storage API
+TEST
 
 Ett Spring Boot-baserat API som fungerar som ett enklare Google Drive / Dropbox.  
 Bygger på controller-service-repository-arkitektur och använder JWT för autentisering.
