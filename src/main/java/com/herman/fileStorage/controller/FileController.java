@@ -12,7 +12,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 
@@ -36,16 +35,9 @@ public class FileController {
             @RequestParam("file") MultipartFile file,
             @RequestParam("folderId") Long folderId
     ) throws IOException {
-
         User user = SecurityUtils.getAuthenticatedUser();
 
-        Folder folder = folderService.getFolderById(folderId)
-                .orElseThrow(() -> new RuntimeException("Folder not found"));
-
-        // Säkerhetskontroll: mappen måste tillhöra användaren
-        if (!folder.getOwner().getId().equals(user.getId())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+        Folder folder = folderService.getFolderByIdAndUser(folderId, user.getId());
 
         FileEntity savedFile = fileService.uploadFile(
                 file.getOriginalFilename(),
@@ -62,11 +54,8 @@ public class FileController {
      */
     @GetMapping("/{fileId}")
     public ResponseEntity<byte[]> downloadFile(@PathVariable Long fileId) {
-
         User user = SecurityUtils.getAuthenticatedUser();
-
-        FileEntity file = fileService.findByIdAndUserId(fileId, user.getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "File not found"));
+        FileEntity file = fileService.findByIdAndUserId(fileId, user.getId());
 
         return ResponseEntity.ok()
                 .header(
@@ -82,11 +71,9 @@ public class FileController {
      */
     @DeleteMapping("/{fileId}")
     public ResponseEntity<Void> deleteFile(@PathVariable Long fileId) {
-
         User user = SecurityUtils.getAuthenticatedUser();
 
-        FileEntity file = fileService.findByIdAndUserId(fileId, user.getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "File not found"));
+        FileEntity file = fileService.findByIdAndUserId(fileId, user.getId());
 
         fileService.deleteFile(fileId);
         return ResponseEntity.noContent().build();
