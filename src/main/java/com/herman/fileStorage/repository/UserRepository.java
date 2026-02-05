@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Repo inteface for User Entity
+ * Repo interface for User Entity
  * Provides CRUD operations and query methods
  */
 
