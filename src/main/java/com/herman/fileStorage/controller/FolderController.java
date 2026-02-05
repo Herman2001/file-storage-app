@@ -1,5 +1,6 @@
 package com.herman.fileStorage.controller;
 
+import com.herman.fileStorage.dto.FolderResponseDto;
 import com.herman.fileStorage.entity.Folder;
 import com.herman.fileStorage.entity.User;
 import com.herman.fileStorage.security.SecurityUtils;
@@ -19,14 +20,20 @@ public class FolderController {
     }
 
     @PostMapping
-    public Folder createFolder(@RequestParam String name) {
+    public FolderResponseDto createFolder(@RequestParam String name) {
         User user = SecurityUtils.getAuthenticatedUser();
-        return folderService.createFolder(name, user);
+        Folder folder = folderService.createFolder(name, user);
+        return new FolderResponseDto(folder.getId(), folder.getName());
     }
 
     @GetMapping
-    public List<Folder> getFolders() {
+    public List<FolderResponseDto> getFolders() {
         User user = SecurityUtils.getAuthenticatedUser();
-        return folderService.findAllByOwner(user);
+        return folderService.findAllByOwner(user)
+                .stream()
+                .map(folder -> new FolderResponseDto(
+                        folder.getId(), folder.getName()
+                ))
+                .toList();
     }
 }
