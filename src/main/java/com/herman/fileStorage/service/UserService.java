@@ -1,6 +1,9 @@
 package com.herman.fileStorage.service;
 
 import com.herman.fileStorage.entity.User;
+import com.herman.fileStorage.exception.ForbiddenException;
+import com.herman.fileStorage.exception.ResourceAlreadyExistsException;
+import com.herman.fileStorage.exception.ResourceNotFoundException;
 import com.herman.fileStorage.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,11 +32,11 @@ public class UserService {
      * @param username the username of the new user
      * @param passwordString the password in plain text
      * @return the saved User
-     * @throws IllegalArgumentException if username is already taken
+     * @throws ResourceNotFoundException if username is already taken
      */
     public User registerUser(String username, String passwordString) {
         if (userRepository.existsByUsername(username)) {
-            throw new IllegalArgumentException("Username already exists.");
+            throw new ResourceAlreadyExistsException("Username already exists.");
         }
         String encodedPassword = bCryptPasswordEncoder.encode(passwordString);
         User newUser = new User(UUID.randomUUID(), username, encodedPassword);
@@ -51,18 +54,19 @@ public class UserService {
     }
 
     /**
-     * Authenticates a user by theiir username and password
+     * Authenticates a user by their username and password
      *
      * @param username the username
      * @param password the password in plain text
      * @return the authenticated user
-     * @throws IllegalArgumentException if username or password are invalid
+     * @throws ResourceNotFoundException if username not found
+     * @throws ForbiddenException if password is invalid
      */
     public User authenticate(String username, String password) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid username or password."));
+                .orElseThrow(() -> new ResourceNotFoundException("Invalid username or password."));
         if (!bCryptPasswordEncoder.matches(password, user.getPassword())) {
-            throw new IllegalArgumentException("Invalid username or password.");
+            throw new ForbiddenException("Invalid username or password.");
         }
         return user;
     }
