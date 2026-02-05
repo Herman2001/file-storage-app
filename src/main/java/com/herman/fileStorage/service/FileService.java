@@ -3,6 +3,8 @@ package com.herman.fileStorage.service;
 import com.herman.fileStorage.entity.FileEntity;
 import com.herman.fileStorage.entity.Folder;
 import com.herman.fileStorage.entity.User;
+import com.herman.fileStorage.exception.ForbiddenException;
+import com.herman.fileStorage.exception.ResourceNotFoundException;
 import com.herman.fileStorage.repository.FileRepository;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +34,10 @@ public class FileService {
      * @return the saved File
      */
     public FileEntity uploadFile(String filename, byte[] content, Folder folder, User owner) {
+        if (!folder.getOwner().getId().equals(owner.getId())) {
+            throw new ForbiddenException("You do not own the folder");
+        }
+
         FileEntity file = new FileEntity();
         file.setFilename(filename);
         file.setContent(content);
@@ -44,7 +50,7 @@ public class FileService {
      * Finds a file by its id
      *
      * @param id the id of the file
-     * @return an Optional containeing the File if found, else empty
+     * @return an Optional containing the File if found, else empty
      */
     public Optional<FileEntity> findById(Long id) {
         return fileRepository.findById(id);
@@ -57,8 +63,9 @@ public class FileService {
      * @param userId the id of the user who should own the file
      * @return an Optional containing the File if found and owned by user, else empty
      */
-    public Optional<FileEntity> findByIdAndUserId(Long id, UUID userId) {
-        return fileRepository.findByIdAndOwnerId(id, userId);
+    public FileEntity findByIdAndUserId(Long id, UUID userId) {
+        return fileRepository.findByIdAndOwnerId(id, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("File not found"));
     }
 
     /**
