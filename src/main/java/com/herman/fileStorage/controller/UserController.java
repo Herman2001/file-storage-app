@@ -23,11 +23,10 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody UserRegistrationDto dto) {
-        User user = userService.registerUser(dto.getUsername(), dto.getPassword());
+        User user = userService.registerUser(dto.username(), dto.password());
         return ResponseEntity.ok(Map.of(
                 "id", user.getId(),
                 "username", user.getUsername()
         ));
     }
-
 }
