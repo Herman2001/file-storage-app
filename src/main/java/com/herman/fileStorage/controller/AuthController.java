@@ -1,6 +1,6 @@
 package com.herman.fileStorage.controller;
 
-import com.herman.fileStorage.dto.UserRegistrationDto;
+import com.herman.fileStorage.dto.UserLoginDto;
 import com.herman.fileStorage.entity.User;
 import com.herman.fileStorage.security.JwtService;
 import com.herman.fileStorage.service.UserService;
@@ -25,8 +25,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserRegistrationDto dto){
-        User user = userService.authenticate(dto.getUsername(), dto.getPassword());
+    public ResponseEntity<?> login(@RequestBody UserLoginDto dto){
+        User user = userService.authenticate(dto.username(), dto.password());
 
         String token = jwtService.generateToken(user.getUsername());
 
